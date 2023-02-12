@@ -57,20 +57,24 @@ stages:
 - stage: Deploy
   displayName: Deploy to an Azure Web App
   jobs:
-  - job: Deploy
+  - deployment: Deploy
+    environment: approvals
     pool:
       vmImage: 'windows-2019'
-    steps:      
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'Website'
-        downloadPath: '$(Build.ArtifactStagingDirectory)'
-    - task: AzureRmWebAppDeployment@4
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'AZURE SUBSCRIPTION HERE (b999999abc-1234-987a-a1e0-27fb2ea7f9f4)'
-        appType: 'webApp'
-        WebAppName: 'eshoponWebYAML369825031'
-        packageForLinux: '$(Build.ArtifactStagingDirectory)/**/Web.zip'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'Website'
+              downloadPath: '$(Build.ArtifactStagingDirectory)'
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'AZURE SUBSCRIPTION HERE (b999999abc-1234-987a-a1e0-27fb2ea7f9f4)'
+              appType: 'webApp'
+              WebAppName: 'eshoponWebYAML369825031'
+              packageForLinux: '$(Build.ArtifactStagingDirectory)/**/Web.zip'
